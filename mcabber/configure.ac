@@ -284,6 +284,7 @@ AC_CONFIG_FILES([mcabber/Makefile
                  modules/xttitle/Makefile
                  modules/fifo/Makefile
                  modules/urlregex/Makefile
+		 modules/exec/Makefile
                  doc/Makefile
                  doc/guide/Makefile
                  doc/help/Makefile
