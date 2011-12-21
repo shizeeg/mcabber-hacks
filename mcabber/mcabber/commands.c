@@ -1941,6 +1941,7 @@ static void room_names(gpointer bud, char *arg)
 {
   const char *bjid;
   char *buffer;
+  char *realjid;
   GSList *resources, *p_res;
   enum { style_normal = 0, style_detail, style_short,
          style_quiet, style_compact } style = 0;
@@ -1967,6 +1968,7 @@ static void room_names(gpointer bud, char *arg)
   bjid = buddy_getjid(bud);
 
   buffer = g_new(char, 4096);
+  realjid = g_new(char, 1024);
   strncpy(buffer, "Room members:", 127);
   scr_WriteIncomingMessage(bjid, buffer, 0, HBB_PREFIX_INFO, 0);
 
@@ -1987,9 +1989,13 @@ static void room_names(gpointer bud, char *arg)
         enum imrole role = buddy_getrole(bud, p_res->data);
         enum imaffiliation affil = buddy_getaffil(bud, p_res->data);
         bool showaffil = (affil != affil_none);
+        char *rjid = buddy_getrjid(bud, (char *)p_res->data);
+        bool showjid = (rjid != NULL);
 
-        snprintf(buffer, 4095, "[%c] %s (%s%s%s)",
+        snprintf(realjid, 1023, " <%s>", rjid);
+        snprintf(buffer, 4095, "[%c] %s%s (%s%s%s)",
                  imstatus2char[rstatus], (char*)p_res->data,
+                 showjid ? realjid : "",
                  showaffil ? straffil[affil] : "\0",
                  showaffil ? "/" : "\0",
                  strrole[role]);
@@ -2022,6 +2028,7 @@ static void room_names(gpointer bud, char *arg)
   }
   g_slist_free(resources);
   g_free(buffer);
+  g_free(realjid);
 }
 
 static void move_group_member(gpointer bud, void *groupnamedata)
@@ -2996,7 +3003,6 @@ void cmd_room_whois(gpointer bud, const char *usernick, guint interactive)
 
   bjid = buddy_getjid(bud);
   rstatus = buddy_getstatus(bud, nick);
-
   if (rstatus == offline) {
     scr_LogPrint(LPRINT_NORMAL, "No such member: %s", nick);
     if (paramlst)
