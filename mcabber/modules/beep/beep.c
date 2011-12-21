@@ -66,15 +66,15 @@ static void do_beep(char *args)
 {
   /* Check arguments, and if recognized,
    * set mcabber option accordingly */
-  if (!strcmp(args, "enable") ||
-      !strcmp(args, "on") ||
-      !strcmp(args, "yes") ||
-      !strcmp(args, "1"))
+  if (!g_strcmp0(args, "enable") ||
+      !g_strcmp0(args, "on") ||
+      !g_strcmp0(args, "yes") ||
+      !g_strcmp0(args, "1"))
     settings_set(SETTINGS_TYPE_OPTION, "beep_enable", "1");
-  else if (!strcmp(args, "disable") ||
-           !strcmp(args, "off") ||
-           !strcmp(args, "no") ||
-           !strcmp(args, "0"))
+  else if (!g_strcmp0(args, "disable") ||
+           !g_strcmp0(args, "off") ||
+           !g_strcmp0(args, "no") ||
+           !g_strcmp0(args, "0"))
     settings_set(SETTINGS_TYPE_OPTION, "beep_enable", "0");
 
   /* Output current state, either if state is
