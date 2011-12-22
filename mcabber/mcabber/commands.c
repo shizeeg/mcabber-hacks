@@ -583,7 +583,7 @@ static void roster_buddylock(char *bjid, int lock)
   bool may_need_refresh = FALSE;
 
   // Allow special jid "" or "." (current buddy)
-  if (bjid && (!*bjid || !strcmp(bjid, ".")))
+  if (bjid && (!*bjid || !g_strcmp0(bjid, ".")))
     bjid = NULL;
 
   if (bjid) {
@@ -716,7 +716,7 @@ static void roster_note(char *arg)
   if (arg && *arg) {  // Set a note
     gchar *msg, *notetxt;
     msg = to_utf8(arg);
-    if (!strcmp(msg, "-"))
+    if (!g_strcmp0(msg, "-"))
       notetxt = NULL; // delete note
     else
       notetxt = msg;
@@ -853,7 +853,7 @@ void do_color(char *arg)
     wildcard = to_utf8(arglist[1]);
     color = arglist[2];
 
-    if (status && !strcmp(status, "clear")) { // Not a color command, clear all
+    if (status && !g_strcmp0(status, "clear")) { // Not a color command, clear all
       scr_roster_clear_color();
       update_roster = TRUE;
     } else {
@@ -873,11 +873,11 @@ void do_color(char *arg)
     if (!muc || !*muc)
       scr_LogPrint(LPRINT_NORMAL, "What MUC?");
     else {
-      if (!strcmp(muc, "."))
+      if (!g_strcmp0(muc, "."))
         if (!(muc = CURRENT_JID))
           scr_LogPrint(LPRINT_NORMAL, "No JID selected");
       if (muc) {
-        if (check_jid_syntax(muc) && strcmp(muc, "*"))
+        if (check_jid_syntax(muc) && g_strcmp0(muc, "*"))
           scr_LogPrint(LPRINT_NORMAL, "Not a JID");
         else {
           if (!mode || !*mode || !strcasecmp(mode, "on"))
@@ -886,7 +886,7 @@ void do_color(char *arg)
             scr_muc_color(muc, MC_PRESET);
           else if (!strcasecmp(mode, "off"))
             scr_muc_color(muc, MC_OFF);
-          else if (!strcmp(mode, "-"))
+          else if (!g_strcmp0(mode, "-"))
             scr_muc_color(muc, MC_REMOVE);
           else
             scr_LogPrint(LPRINT_NORMAL, "Unknown coloring mode");
@@ -1009,7 +1009,7 @@ static void do_status_to(char *arg)
   }
 
   // Allow things like /status_to "" away
-  if (!*fjid || !strcmp(fjid, "."))
+  if (!*fjid || !g_strcmp0(fjid, "."))
     fjid = NULL;
 
   if (fjid) {
@@ -1065,7 +1065,7 @@ static void do_add(char *arg)
 
   if (!id)
     nick = NULL; // Allow things like: /add "" nick
-  else if (!*id || !strcmp(id, "."))
+  else if (!*id || !g_strcmp0(id, "."))
     id = NULL;
 
   if (id) {
@@ -1308,12 +1308,12 @@ static LmMessageSubType scan_mtype(char **arg)
   LmMessageSubType result = LM_MESSAGE_SUB_TYPE_NOT_SET;
   // Is it a good parameter?
   if (parlist && *parlist) {
-    if (!strcmp("-n", *parlist)) {
+    if (!g_strcmp0("-n", *parlist)) {
       result = LM_MESSAGE_SUB_TYPE_NORMAL;
-    } else if (!strcmp("-h", *parlist)) {
+    } else if (!g_strcmp0("-h", *parlist)) {
       result = LM_MESSAGE_SUB_TYPE_HEADLINE;
     }
-    if (result != LM_MESSAGE_SUB_TYPE_NOT_SET || (!strcmp("--", *parlist)))
+    if (result != LM_MESSAGE_SUB_TYPE_NOT_SET || (!g_strcmp0("--", *parlist)))
       *arg += strlen(*arg) - (parlist[1] ? strlen(parlist[1]) : 0);
   }
   // Anything found? -> skip it
@@ -1576,12 +1576,12 @@ static void do_say_to(char *arg)
 
   // Check for an option parameter
   while (*paramlst) {
-    if (!strcmp(*paramlst, "-q")) {
+    if (!g_strcmp0(*paramlst, "-q")) {
       char **oldparamlst = paramlst;
       paramlst = split_arg(*(oldparamlst+1), 2, 1); // jid, message
       free_arg_lst(oldparamlst);
       quiet = TRUE;
-    } else if (!strcmp(*paramlst, "-f")) {
+    } else if (!g_strcmp0(*paramlst, "-f")) {
       char **oldparamlst = paramlst;
       paramlst = split_arg(*(oldparamlst+1), 2, 1); // filename, jid
       free_arg_lst(oldparamlst);
@@ -1979,7 +1979,6 @@ static void room_names(gpointer bud, char *arg)
 
     rstatus = buddy_getstatus(bud, p_res->data);
     rst_msg = buddy_getstatusmsg(bud, p_res->data);
-
     if (style == style_short) {
       snprintf(buffer, 4095, "[%c] %s%s%s", imstatus2char[rstatus],
                (char*)p_res->data,
@@ -1989,7 +1988,7 @@ static void room_names(gpointer bud, char *arg)
         enum imrole role = buddy_getrole(bud, p_res->data);
         enum imaffiliation affil = buddy_getaffil(bud, p_res->data);
         bool showaffil = (affil != affil_none);
-        char *rjid = buddy_getrjid(bud, (char *)p_res->data);
+        const char *rjid = buddy_getrjid(bud, (char *)p_res->data);
         bool showjid = (rjid != NULL);
 
         snprintf(realjid, 1023, " <%s>", rjid);
@@ -2109,7 +2108,7 @@ static void do_rename(char *arg)
   } else {
     // Rename a single buddy
     guint del_name = 0;
-    if (!*newname || !strcmp(arg, "-"))
+    if (!*newname || !g_strcmp0(arg, "-"))
       del_name = TRUE;
     if (on_srv) {
       /* We do not rename the buddy right now because the server could reject
@@ -2469,7 +2468,7 @@ static void room_join(gpointer bud, char *arg)
   if (!nick)
     pass = NULL;
 
-  if (!roomname || !strcmp(roomname, ".")) {
+  if (!roomname || !g_strcmp0(roomname, ".")) {
     // If the current_buddy is recognized as a room, the room name
     // can be omitted (or "." can be used).
     if (!bud || !(buddy_gettype(bud) & ROSTER_TYPE_ROOM)) {
@@ -2715,7 +2714,7 @@ static void room_kick(gpointer bud, char *arg)
   }
 
   ra.type = type_role;
-  ra.val.affil = role_none;
+  ra.val.affil = affil_none;
 
   nick_utf8 = to_utf8(nick);
   reason_utf8 = to_utf8(arg);
@@ -2829,7 +2828,7 @@ static void room_topic(gpointer bud, char *arg)
   }
 
   // If arg is "-", let's clear the topic
-  if (!strcmp(arg, "-"))
+  if (!g_strcmp0(arg, "-"))
     arg = NULL;
 
   arg = to_utf8(arg);
@@ -3083,7 +3082,7 @@ static void room_bookmark(gpointer bud, char *arg)
         autojoin = 0;
       else if (!strcasecmp(*pp, "+autojoin") || !strcasecmp(*pp, "autojoin"))
         autojoin = 1;
-      else if (!strcmp(*pp, "-"))
+      else if (!g_strcmp0(*pp, "-"))
         nick_set = 1;
       else {
         nick_set = 1;
@@ -3423,7 +3422,7 @@ static void do_request(char *arg)
   }
 
   // Allow special jid "" or "." (current buddy)
-  if (fjid && (!*fjid || !strcmp(fjid, ".")))
+  if (fjid && (!*fjid || !g_strcmp0(fjid, ".")))
     fjid = NULL;
 
   if (fjid) {
@@ -3508,7 +3507,7 @@ static void do_event(char *arg)
     GSList *p;
     GSList *evidlst;
 
-    if (!strcmp(evid, "*")) {
+    if (!g_strcmp0(evid, "*")) {
       // Use completion list
       evidlst = evs_geteventslist();
     } else {
@@ -3576,7 +3575,7 @@ static void do_pgp(char *arg)
   }
 
   // Allow special jid "" or "." (current buddy)
-  if (fjid && (!*fjid || !strcmp(fjid, ".")))
+  if (fjid && (!*fjid || !g_strcmp0(fjid, ".")))
     fjid = NULL;
 
   if (fjid) {

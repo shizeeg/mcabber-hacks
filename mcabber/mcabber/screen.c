@@ -283,7 +283,7 @@ void scr_muc_color(const char *muc, muccoltype type)
 {
   gchar *muclow = g_utf8_strdown(muc, -1);
   if (type == MC_REMOVE) { // Remove it
-    if (strcmp(muc, "*")) {
+    if (g_strcmp0(muc, "*")) {
       if (muccolors && g_hash_table_lookup(muccolors, muclow))
         g_hash_table_remove(muccolors, muclow);
     } else {
@@ -291,7 +291,7 @@ void scr_muc_color(const char *muc, muccoltype type)
     }
     g_free(muclow);
   } else { // Add or overwrite
-    if (strcmp(muc, "*")) {
+    if (g_strcmp0(muc, "*")) {
       muccoltype *value = g_new(muccoltype, 1);
       *value = type;
       ensure_string_htable(&muccolors, g_free);
@@ -303,8 +303,8 @@ void scr_muc_color(const char *muc, muccoltype type)
   }
   // Need to redraw?
   if (chatmode &&
-      ((buddy_search_jid(muc) == current_buddy) || !strcmp(muc, "*")))
-    scr_update_buddy_window();
+      ((buddy_search_jid(muc) == current_buddy) || !g_strcmp0(muc, "*")))
+  scr_update_buddy_window();
 }
 
 // Sets the color for nick in MUC
@@ -316,7 +316,7 @@ void scr_muc_nick_color(const char *nick, const char *color)
   bool need_update = FALSE;
   snick = g_strdup_printf("<%s>", nick);
   mnick = g_strdup_printf("*%s ", nick);
-  if (!strcmp(color, "-")) { // Remove the color
+  if (!g_strcmp0(color, "-")) { // Remove the color
     if (nickcolors) {
       nickcolor *nc = g_hash_table_lookup(nickcolors, snick);
       if (nc) { // Have this nick already
@@ -392,7 +392,7 @@ bool scr_roster_color(const char *status, const char *wildcard,
       break;
     }
   }
-  if (!strcmp(color,"-")) { // Delete the rule
+  if (!g_strcmp0(color,"-")) { // Delete the rule
     if (found) {
       free_rostercolrule(found->data);
       rostercolrules = g_slist_delete_link(rostercolrules, found);
@@ -2079,7 +2079,7 @@ void scr_draw_roster(void)
           for (head = rostercolrules; head; head = g_slist_next(head)) {
             rostercolor *rc = head->data;
             if (g_pattern_match_string(rc->compiled, bjid) &&
-                (!strcmp("*", rc->status) || strchr(rc->status, status))) {
+                (!g_strcmp0("*", rc->status) || strchr(rc->status, status))) {
               color = compose_color(rc->color);
               break;
             }

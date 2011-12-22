@@ -775,7 +775,7 @@ static void check_signature(const char *barejid, const char *rname,
   if (!res_pgpdata)
     return;
 
-  if (!node->name || strcmp(node->name, "x")) // XXX: probably useless
+  if (!node->name || g_strcmp0(node->name, "x")) // XXX: probably useless
     return; // We expect "<x xmlns='jabber:x:signed'>"
 
   // Get signature
@@ -1302,12 +1302,12 @@ static LmHandlerResult handle_messages(LmMessageHandler *handler,
 
   if (from) {
     x = lm_message_node_find_xmlns(m->node, NS_MUC_USER);
-    if (x && !strcmp(x->name, "x"))
+    if (x && !g_strcmp0(x->name, "x"))
       got_muc_message(from, x, timestamp);
 
     x = lm_message_node_find_xmlns(m->node, NS_X_CONFERENCE);
 
-    if (x && !strcmp(x->name, "x")) {
+    if (x && !g_strcmp0(x->name, "x")) {
       const char *jid = lm_message_node_get_attribute(x, "jid");
       if (jid) {
         const char *reason = lm_message_node_get_attribute(x, "reason");
@@ -1421,9 +1421,9 @@ static LmHandlerResult handle_presence(LmMessageHandler *handler,
   p = lm_message_node_get_child_value(m->node, "show");
   if (p) {
     if (!strcmp(p, "away"))      ust = away;
-    else if (!strcmp(p, "dnd"))  ust = dontdisturb;
-    else if (!strcmp(p, "xa"))   ust = notavail;
-    else if (!strcmp(p, "chat")) ust = freeforchat;
+    else if (!g_strcmp0(p, "dnd"))  ust = dontdisturb;
+    else if (!g_strcmp0(p, "xa"))   ust = notavail;
+    else if (!g_strcmp0(p, "chat")) ust = freeforchat;
   }
 
   if (mstype == LM_MESSAGE_SUB_TYPE_UNAVAILABLE)
@@ -1919,7 +1919,7 @@ void xmpp_setstatus(enum imstatus st, const char *recipient, const char *msg,
   if (msg) {
     // The status message has been specified.  We'll use it, unless it is
     // "-" which is a special case (option meaning "no status message").
-    if (!strcmp(msg, "-"))
+    if (!g_strcmp0(msg, "-"))
       msg = "";
   } else {
     // No status message specified; we'll use:
@@ -2129,7 +2129,7 @@ GSList *xmpp_get_all_storage_bookmarks(void)
       autojoin = lm_message_node_get_attribute(x, "autojoin");
       nick = lm_message_node_get_child_value(x, "nick");
       name = lm_message_node_get_attribute(x, "name");
-      if (autojoin && !strcmp(autojoin, "1"))
+      if (autojoin && !g_strcmp0(autojoin, "1"))
         bm_elt->autojoin = 1;
       if (nick)
         bm_elt->nick = g_strdup(nick);

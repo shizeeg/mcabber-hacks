@@ -594,10 +594,10 @@ LmHandlerResult handle_iq_roster(LmMessageHandler *h, LmConnection *c,
 
     esub = sub_none;
     if (sub) {
-      if (!strcmp(sub, "to"))          esub = sub_to;
-      else if (!strcmp(sub, "from"))   esub = sub_from;
-      else if (!strcmp(sub, "both"))   esub = sub_both;
-      else if (!strcmp(sub, "remove")) esub = sub_remove;
+      if (!g_strcmp0(sub, "to"))          esub = sub_to;
+      else if (!g_strcmp0(sub, "from"))   esub = sub_from;
+      else if (!g_strcmp0(sub, "both"))   esub = sub_both;
+      else if (!g_strcmp0(sub, "remove")) esub = sub_remove;
     }
 
     if (esub == sub_remove) {

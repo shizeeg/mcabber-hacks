@@ -439,30 +439,30 @@ static void handle_vcard_node(const char *barejid, LmMessageNode *vcardnode)
 
     data = lm_message_node_get_value(x);
 
-    if (!strcmp(p, "FN"))
+    if (!g_strcmp0(p, "FN"))
       display_vcard_item(barejid, "Name", vcard_attrib, data);
-    else if (!strcmp(p, "NICKNAME"))
+    else if (!g_strcmp0(p, "NICKNAME"))
       display_vcard_item(barejid, "Nickname", vcard_attrib, data);
-    else if (!strcmp(p, "URL"))
+    else if (!g_strcmp0(p, "URL"))
       display_vcard_item(barejid, "URL", vcard_attrib, data);
-    else if (!strcmp(p, "BDAY"))
+    else if (!g_strcmp0(p, "BDAY"))
       display_vcard_item(barejid, "Birthday", vcard_attrib, data);
-    else if (!strcmp(p, "TZ"))
+    else if (!g_strcmp0(p, "TZ"))
       display_vcard_item(barejid, "Timezone", vcard_attrib, data);
-    else if (!strcmp(p, "TITLE"))
+    else if (!g_strcmp0(p, "TITLE"))
       display_vcard_item(barejid, "Title", vcard_attrib, data);
-    else if (!strcmp(p, "ROLE"))
+    else if (!g_strcmp0(p, "ROLE"))
       display_vcard_item(barejid, "Role", vcard_attrib, data);
-    else if (!strcmp(p, "DESC"))
+    else if (!g_strcmp0(p, "DESC"))
       display_vcard_item(barejid, "Comment", vcard_attrib, data);
-    else if (!strcmp(p, "N")) {
+    else if (!g_strcmp0(p, "N")) {
       data = lm_message_node_get_child_value(x, "FAMILY");
       display_vcard_item(barejid, "Family Name", vcard_attrib, data);
       data = lm_message_node_get_child_value(x, "GIVEN");
       display_vcard_item(barejid, "Given Name", vcard_attrib, data);
       data = lm_message_node_get_child_value(x, "MIDDLE");
       display_vcard_item(barejid, "Middle Name", vcard_attrib, data);
-    } else if (!strcmp(p, "ORG")) {
+    } else if (!g_strcmp0(p, "ORG")) {
       data = lm_message_node_get_child_value(x, "ORGNAME");
       display_vcard_item(barejid, "Organisation name", vcard_attrib, data);
       data = lm_message_node_get_child_value(x, "ORGUNIT");
@@ -476,7 +476,7 @@ static void handle_vcard_node(const char *barejid, LmMessageNode *vcardnode)
         vcard_attrib |= vcard_work;
       if (lm_message_node_get_child(x, "PREF"))
         vcard_attrib |= vcard_pref;
-      if (!strcmp(p, "ADR")) {          // Address
+      if (!g_strcmp0(p, "ADR")) {          // Address
         if (lm_message_node_get_child(x, "POSTAL"))
           vcard_attrib |= vcard_postal;
         data = lm_message_node_get_child_value(x, "EXTADD");
@@ -491,7 +491,7 @@ static void handle_vcard_node(const char *barejid, LmMessageNode *vcardnode)
         display_vcard_item(barejid, "Postal code", vcard_attrib, data);
         data = lm_message_node_get_child_value(x, "CTRY");
         display_vcard_item(barejid, "Country", vcard_attrib, data);
-      } else if (!strcmp(p, "TEL")) {   // Telephone
+      } else if (!g_strcmp0(p, "TEL")) {   // Telephone
         data = lm_message_node_get_child_value(x, "NUMBER");
         if (data) {
           if (lm_message_node_get_child(x, "VOICE"))
@@ -502,7 +502,7 @@ static void handle_vcard_node(const char *barejid, LmMessageNode *vcardnode)
             vcard_attrib |= vcard_cell;
           display_vcard_item(barejid, "Phone", vcard_attrib, data);
         }
-      } else if (!strcmp(p, "EMAIL")) { // Email
+      } else if (!g_strcmp0(p, "EMAIL")) { // Email
         if (lm_message_node_get_child(x, "INTERNET"))
           vcard_attrib |= vcard_inet;
         data = lm_message_node_get_child_value(x, "USERID");
@@ -608,9 +608,9 @@ static void storage_bookmarks_parse_conference(LmMessageNode *node)
   }
   if (awhois) {
     enum room_autowhois i = autowhois_default;
-    if (!strcmp(awhois, "1") || !(strcmp(awhois, "true")))
+    if (!g_strcmp0(awhois, "1") || !(g_strcmp0(awhois, "true")))
       i = autowhois_on;
-    else if (!strcmp(awhois, "0") || !(strcmp(awhois, "false")))
+    else if (!g_strcmp0(awhois, "0") || !(g_strcmp0(awhois, "false")))
       i = autowhois_off;
     if (i != autowhois_default)
       buddy_setautowhois(room_elt->data, i);
@@ -627,7 +627,7 @@ static void storage_bookmarks_parse_conference(LmMessageNode *node)
   // Is autojoin set?
   // If it is, we'll look up for more information (nick? password?) and
   // try to join the room.
-  if (autojoin && !strcmp(autojoin, "1")) {
+  if (autojoin && !g_strcmp0(autojoin, "1")) {
     const char *nick, *passwd;
     char *tmpnick = NULL;
     nick = lm_message_node_get_child_value(node, "nick");
@@ -655,7 +655,7 @@ static LmHandlerResult cb_storage_bookmarks(LmMessageHandler *h,
   if (lm_message_get_sub_type(m) == LM_MESSAGE_SUB_TYPE_ERROR) {
     // No server support, or no bookmarks?
     p = m->node->children->name;
-    if (p && !strcmp(p, "item-not-found")) {
+    if (p && !g_strcmp0(p, "item-not-found")) {
       // item-no-found means the server has Private Storage, but it's
       // currently empty.
       if (bookmarks)
@@ -678,7 +678,7 @@ static LmHandlerResult cb_storage_bookmarks(LmMessageHandler *h,
   // Walk through the storage tags
   for (x = ansqry->children ; x; x = x->next) {
     // If the current node is a conference item, parse it and update the roster
-    if (x->name && !strcmp(x->name, "conference"))
+    if (x->name && !g_strcmp0(x->name, "conference"))
       storage_bookmarks_parse_conference(x);
   }
   // "Copy" the bookmarks node
@@ -700,7 +700,7 @@ static LmHandlerResult cb_storage_rosternotes(LmMessageHandler *h,
     const char *p;
     // No server support, or no roster notes?
     p = m->node->children->name;
-    if (p && !strcmp(p, "item-not-found")) {
+    if (p && !g_strcmp0(p, "item-not-found")) {
       // item-no-found means the server has Private Storage, but it's
       // currently empty.
       if (rosternotes)
@@ -755,7 +755,7 @@ void xmpp_request_storage(const gchar *storage)
                                 "xmlns", storage);
 
   for (i = 0;
-       strcmp(iq_request_storage_handlers[i].storagens, storage) != 0;
+       g_strcmp0(iq_request_storage_handlers[i].storagens, storage) != 0;
        ++i) ;
 
   handler = lm_message_handler_new(iq_request_storage_handlers[i].handler,
