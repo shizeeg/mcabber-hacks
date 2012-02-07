@@ -5,15 +5,7 @@ if [ ! -f logprint.h ]; then
   exit 1
 fi
 
-if which hg > /dev/null 2>&1; then
-  cs=$(hg id 2> /dev/null | cut -d' ' -f1)
-  if test $? -eq 0; then
-    if [ x"$cs" != x ]; then
-      grep -q "$cs" hgcset.h > /dev/null 2>&1 || \
-        echo "#define HGCSET \"$cs\"" > hgcset.h
-      exit 0
-    fi
-  fi
-fi
+GIT_COMMIT=`git log -1 --abbrev-commit | sed "s/commit //g" | head -1`
+GIT_DATE=`git log -1 --date=iso | grep Date: | sed -E "s/Date: +//g"`
+echo "#define HGCSET \"GIT $GIT_COMMIT ($GIT_DATE)\"" > hgcset.h
 
-echo > hgcset.h
