@@ -53,7 +53,7 @@ static void do_exec(char *args)
   if (!args)
     return;
 
-  gchar *buff = g_strnfill(2048, '\0');
+  gchar *buff = g_strnfill(8192, '\0');
   gchar *cmd[PATH_MAX];
   gboolean isNoEcho = FALSE;
   if (g_str_has_prefix(args, "@")) {
@@ -71,7 +71,7 @@ static void do_exec(char *args)
     return;
   }
 
-  fread(buff, 1024, 1, fp);
+  fread(buff, 4096, 1, fp);
   pclose(fp);
 
   g_strchomp(buff);
