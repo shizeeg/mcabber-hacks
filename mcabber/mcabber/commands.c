@@ -1446,6 +1446,7 @@ static void do_msay(char *arg)
   } else { // Send to currently selected buddy
     gpointer bud;
     gchar *msg_utf8;
+    gchar *out_utf8;
 
     if (!current_buddy) {
       scr_LogPrint(LPRINT_NORMAL, "Whom are you talking to?");
@@ -1462,7 +1463,10 @@ static void do_msay(char *arg)
     buddy_setflags(bud, ROSTER_FLAG_LOCK, TRUE);
     msg_utf8 = to_utf8(scr_get_multiline());
     if (msg_utf8) {
-      send_message(msg_utf8, scr_get_multimode_subj(), scan_mtype(&arg));
+      // add newline
+      out_utf8 = g_strdup_printf("\n%s", msg_utf8);
+      send_message(out_utf8, scr_get_multimode_subj(), scan_mtype(&arg));
+      g_free(out_utf8);
       g_free(msg_utf8);
     }
   }
